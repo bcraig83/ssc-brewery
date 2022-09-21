@@ -1,6 +1,7 @@
 package guru.sfg.brewery.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -15,10 +16,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Notice the "/webjars/**". Otherwise it won't be able to pull down the jquery/css stuff.
         ((HttpSecurity) ((ExpressionUrlAuthorizationConfigurer.AuthorizedUrl)
                 http
-                        .authorizeRequests(authorize -> authorize.antMatchers("/", "/webjars/**", "/login", "/resource/**").permitAll())
+                        .authorizeRequests(authorize -> authorize
+                                .antMatchers("/", "/webjars/**", "/login", "/resource/**").permitAll()
+                                .antMatchers("/beers/find", "/beers*").permitAll()
+                                .antMatchers(HttpMethod.GET, "/api/v1/beer/**").permitAll()
+                                .mvcMatchers(HttpMethod.GET, "/api/v1/beerUpc/{upc}").permitAll())
                         .authorizeRequests().anyRequest())
                 .authenticated().and())
                 .formLogin().and().httpBasic();
-
     }
 }
